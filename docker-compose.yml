@@ -1,0 +1,55 @@
+version: '3'
+services:
+  geodata-extractor-fe-dev:
+    # image: registry.ecosystem-urbanage.eu/geodata-extractor-fe:main
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+      args:
+        BASE_HREF: /
+    ports:
+      - '18089:80'
+    volumes:
+      - /home/urbng/repos/geodataextractor_frontend/src/assets/config.json:/usr/share/nginx/html/assets/config.json
+      ##- /home/urbng/repos/geodataextractor_frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - geodata-extractor-network
+      - web
+    labels:
+      - traefik.http.routers.geodata-extractor-ui.rule=Host(`geodata-extractor-ui.${BASE_URL}`)
+      - traefik.http.routers.geodata-extractor-ui.tls=true
+      - traefik.http.routers.geodata-extractor-ui.tls.certresolver=lets-encrypt
+      - traefik.port=18089
+    profiles:
+      - dev
+  
+  geodata-extractor-fe-prod:
+    # image: registry.ecosystem-urbanage.eu/geodata-extractor-fe:main
+    build:
+      context: .
+      dockerfile: Dockerfile-prod
+      args:
+        BASE_HREF: /
+    ports:
+      - '18089:80'
+    volumes:
+      - /home/urbng/repos/geodataextractor_frontend/src/assets/config.json:/usr/share/nginx/html/assets/config.json
+      ##- /home/urbng/repos/geodataextractor_frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - geodata-extractor-network
+      - web
+    labels:
+      - traefik.http.routers.geodata-extractor-ui.rule=Host(`geodata-extractor-ui.${BASE_URL}`)
+      - traefik.http.routers.geodata-extractor-ui.tls=true
+      - traefik.http.routers.geodata-extractor-ui.tls.certresolver=lets-encrypt
+      - traefik.port=18089
+    profiles:
+      - prod
+
+
+networks:
+  geodata-extractor-network:
+    driver: bridge
+  web:
+    external: true
+
